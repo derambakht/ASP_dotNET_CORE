@@ -13,6 +13,7 @@ namespace Common
             var pc = new PersianCalendar();
             var array = shamsiDate.Split('/');
            
+            //use Persia.dll
             DateTime date = new DateTime(int.Parse(Persia.PersianWord.ConvertToLatinNumber(array[0])),
             int.Parse(Persia.PersianWord.ConvertToLatinNumber(array[1])),
             int.Parse(Persia.PersianWord.ConvertToLatinNumber(array[2])), pc);

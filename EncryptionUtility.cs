@@ -63,5 +63,48 @@ namespace Common
             byte[] decrypted = cTransform.TransformFinalBlock(toDecryptArry, 0, toDecryptArry.Length);
             return Encoding.UTF8.GetString(decrypted);
         }
+        
+        static string publicKey = "";
+        static string privateKey = "";
+
+        public static void GenerateRSAKey()
+        {
+            using (var rsa = new RSACryptoServiceProvider(1024))
+            {
+                publicKey = rsa.ToXmlString(false); // Do something with the key...
+                privateKey = rsa.ToXmlString(true); // Do something with the key...
+            }
+        }
+
+        public static string Encryption(string strText)
+        {
+            var testData = Encoding.UTF8.GetBytes(strText);
+            using (var rsa = new RSACryptoServiceProvider(1024))
+            {
+                // client encrypting data with public key issued by server                    
+                rsa.FromXmlString(publicKey);
+
+                var encryptedData = rsa.Encrypt(testData, true);
+                var base64Encrypted = Convert.ToBase64String(encryptedData);
+                return base64Encrypted;
+            }
+        }
+
+        public static string Decryption(string strText)
+        {
+            var testData = Encoding.UTF8.GetBytes(strText);
+            using (var rsa = new RSACryptoServiceProvider(1024))
+            {
+                var base64Encrypted = strText;
+
+                // server decrypting data with private key                    
+                rsa.FromXmlString(privateKey);
+
+                var resultBytes = Convert.FromBase64String(base64Encrypted);
+                var decryptedBytes = rsa.Decrypt(resultBytes, true);
+                var decryptedData = Encoding.UTF8.GetString(decryptedBytes);
+                return decryptedData.ToString();
+            }
+        }
     }
 }
